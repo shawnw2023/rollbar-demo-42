@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/students', (req, res) => {
+    rollbar.info("someone accessed the list of students...")
     res.status(200).send(students)
 })
 
@@ -34,20 +35,24 @@ app.post('/api/students', (req, res) => {
    try {
        if (index === -1 && name !== '') {
            students.push(name)
+           rollbar.info("someone created a new student. Wowza")
            res.status(200).send(students)
        } else if (name === ''){
+        rollbar.error("someone submit a blank name! Stop that!")
            res.status(400).send('You must enter a name.')
        } else {
+        rollbar.error("Someone tried to clone a student! NoNo.")
            res.status(400).send('That student already exists.')
        }
    } catch (err) {
+    rollbar.error(err)
        console.log(err)
    }
 })
 
 app.delete('/api/students/:index', (req, res) => {
     const targetIndex = +req.params.index
-    
+    rollbar.warning("Someone deleted a student... Ominous.")
     students.splice(targetIndex, 1)
     res.status(200).send(students)
 })
